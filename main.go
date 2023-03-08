@@ -27,14 +27,6 @@ func main() {
 
 	// 打印HTTP请求和响应的日志
 	proxy.ModifyResponse = func(resp *http.Response) error {
-		// 打印HTTP请求的日志
-		requestDump, err := httputil.DumpRequest(resp.Request, true)
-		if err != nil {
-			log.Printf("Failed to dump request: \n%v\n", err)
-		} else {
-			log.Printf("%s Request: %s\n", time.Now().Format("2006-01-02 15:04:05"), string(requestDump))
-		}
-
 		// 打印HTTP响应的日志
 		responseDump, err := httputil.DumpResponse(resp, true)
 		if err != nil {
@@ -51,6 +43,14 @@ func main() {
 
 	// 启动HTTP服务器
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// 打印HTTP请求日志
+		requestDump, err := httputil.DumpRequest(r, true)
+		if err != nil {
+			log.Printf("Failed to dump request: \n%v\n", err)
+		} else {
+			log.Printf("%s Request: %s\n", time.Now().Format("2006-01-02 15:04:05"), string(requestDump))
+		}
+		// 反向代理转发
 		proxy.ServeHTTP(w, r)
 	})
 
