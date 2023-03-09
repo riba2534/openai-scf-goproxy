@@ -1,6 +1,6 @@
 # 腾讯云函数1分钟搭建 OpenAI 国内代理
 
-
+> 项目地址: https://github.com/riba2534/openai-scf-goproxy
 
 最近有一个好消息，OpenAI 开放了自己的 API，开发者可以很方便的调用各种语言模型来完成自己的创意，但是由于众所周知的原因国内访问 OpenAI 时接口可能大概率超时或者调不通，那解决无非是通过 proxy 的方式：
 
