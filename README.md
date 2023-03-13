@@ -44,6 +44,13 @@
 注意: 这里的访问路径后面有个 `/release/` 你在用的时候把这个去掉，即: `https://service-xxxxxx.hk.apigw.tencentcs.com`
 
 
+
+**重要提示**：云函数默认访问的超时时间较短，而调用 openai 的时间可能很长，所以我们需要改一下云函数配置，把超时时间调大，在左边「函数管理」-> 「函数配置」 里面，把访问的超时时间和并发度调大，如下图：
+
+[![超时时间.png](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/13/640ece0cc7848.png)](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/13/640ece0cc7848.png)
+
+[![并发配置.png](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/13/640ece0c4dd58.png)](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/13/640ece0c4dd58.png)
+
 ### 大功告成
 
 至此，一个指向 openAPI 的反向代理就搭好了，你在开发的时候使用国内服务器，只需要把 `api.openapi.com` 换成这个新的地址就可以了.
