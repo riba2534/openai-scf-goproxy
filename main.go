@@ -2,20 +2,36 @@ package main
 
 import (
 	"log"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"time"
 )
 
+func logRequest(r *http.Request) {
+	requestDump, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		log.Printf("Failed to dump request: %v\n", err)
+	} else {
+		log.Printf("%s Request: %s\n", time.Now().Format("2006-01-02 15:04:05"), string(requestDump))
+	}
+}
+
+func logResponse(resp *http.Response) {
+	responseDump, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		log.Printf("Failed to dump response: %v\n", err)
+	} else {
+		log.Printf("%s Response: \n%s\n", time.Now().Format("2006-01-02 15:04:05"), string(responseDump))
+	}
+}
+
 func main() {
-	targetUrl := "https://api.openai.com/" // 目标域名和端口
+	targetUrl := "https://api.openai.com/"
 	target, err := url.Parse(targetUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	// 创建反向代理
 	proxy := httputil.NewSingleHostReverseProxy(target)
 
@@ -25,28 +41,9 @@ func main() {
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
 	}
-
-	// 设置超时时间
-	timeout := time.Duration(1 * time.Minute)
-	proxy.Transport = &http.Transport{
-		Proxy:                 http.ProxyFromEnvironment,
-		DialContext:           (&net.Dialer{Timeout: timeout}).DialContext,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
-
-	// 打印HTTP请求和响应的日志
+	// 打印HTTP响应的日志
 	proxy.ModifyResponse = func(resp *http.Response) error {
-		// 打印HTTP响应的日志
-		responseDump, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			log.Printf("Failed to dump response: %v\n", err)
-		} else {
-			log.Printf("%s Response: \n%s\n", time.Now().Format("2006-01-02 15:04:05"), string(responseDump))
-		}
-
+		logResponse(resp)
 		return nil
 	}
 
@@ -56,12 +53,8 @@ func main() {
 	// 启动HTTP服务器
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// 打印HTTP请求日志
-		requestDump, err := httputil.DumpRequest(r, true)
-		if err != nil {
-			log.Printf("Failed to dump request: \n%v\n", err)
-		} else {
-			log.Printf("%s Request: %s\n", time.Now().Format("2006-01-02 15:04:05"), string(requestDump))
-		}
+		logRequest(r)
+
 		// 反向代理转发
 		proxy.ServeHTTP(w, r)
 	})
