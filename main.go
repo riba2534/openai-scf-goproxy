@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	targetUrl := "https://api.openai.com/" // 目标域名和端口
+	targetUrl := "https://api.openai.com" // 目标域名和端口
 	target, err := url.Parse(targetUrl)
 	if err != nil {
 		log.Fatal(err)
@@ -32,7 +32,7 @@ func main() {
 		if err != nil {
 			log.Printf("Failed to dump response: %v\n", err)
 		} else {
-			log.Printf("%s Response: \n%s\n", time.Now().Format("2006-01-02 15:04:05"), string(responseDump))
+			log.Printf("Response: \n%s\n", string(responseDump))
 		}
 
 		return nil
